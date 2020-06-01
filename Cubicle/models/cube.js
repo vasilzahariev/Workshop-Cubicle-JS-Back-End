@@ -29,10 +29,4 @@ class Cube {
     }
 }
 
-const test = new Cube('Test', 'Test Desc', 'www.google.com', 7);
-const test2 = new Cube('Test2', 'Test Desc', 'www.google.com', 7);
-
-test.save();
-test2.save();
-
 module.exports = Cube;
