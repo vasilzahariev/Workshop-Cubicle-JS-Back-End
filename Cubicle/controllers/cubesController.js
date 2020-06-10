@@ -39,9 +39,18 @@ const getFilteredCubes = async (search, from, to) => {
     return cubes;
 }
 
+const addAccessoryToCube = async (cubeId, accessory) => {
+    await Cube.findByIdAndUpdate(cubeId, {
+        $addToSet: { 
+            accessories: [accessory]
+        }
+    });
+}
+
 module.exports = {
     getAllCubes,
     getCube,
     createCube,
-    getFilteredCubes
+    getFilteredCubes,
+    addAccessoryToCube
 }

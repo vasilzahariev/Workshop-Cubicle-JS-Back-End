@@ -49,6 +49,7 @@ router.get('/create', (req, res) => {
     });
 });
 
+// TODO: When there's an invalid image url make it so it shows an error message
 router.post('/create', async (req, res) => {
     const {
         name,
@@ -59,8 +60,13 @@ router.post('/create', async (req, res) => {
 
     const err = await cubesController.createCube(name, description, imageUrl, difficultyLevel);
 
-    if (err) console.log(err);
-    else res.redirect(302, '/');
+    if (err) {
+        console.log(err);
+
+        res.redirect('/create');
+    } else { 
+        res.redirect(302, '/');
+    }
 });
 
 router.get('/create/accessory', (req, res) => {
@@ -86,11 +92,34 @@ router.get('/details/:id', async (req, res) => {
     const id = req.params.id;
 
     const cube = await cubesController.getCube(id);
+    const accessories = await accessoryController.getAtachedAccessories(id);
 
     res.render('details', {
         title: 'Details Page',
-        cube: cube
+        cube: cube,
+        accessories: accessories
+    });
+});
+
+router.get('/attach/accessory/:id', async (req, res) => {
+    const id = req.params.id;
+    const cube = await cubesController.getCube(id);
+    const accessories = await accessoryController.getUnatachedAccessories(id);
+
+    res.render('attachAccessory', {
+        title: 'Attach Accessory',
+        cube: cube,
+        accessories: accessories
     })
+});
+
+router.post('/attach/accessory/:id', async (req, res) => {
+    const cubeId = req.params.id;
+    const accessoryId = req.body.accessory;
+
+    await cubesController.addAccessoryToCube(cubeId, accessoryId);
+
+    res.redirect(302, `/details/${cubeId}`);
 });
 
 
