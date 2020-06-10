@@ -8,6 +8,14 @@
     <p><span>Difficulty level:</span> {{cube.difficulty}}</p>
     <a class="btn" href="/">Back</a>
   </div>
+  <h2>Accessories</h2>
+  <div class="accessories">
+    {{#each accessories}}
+    {{> accessory}}
+    {{else}}
+    <h3 class="italic">This cube has no accessories yet...</h3>
+    {{/each}}
+  </div>
 </main>
 
 {{> footer}}
