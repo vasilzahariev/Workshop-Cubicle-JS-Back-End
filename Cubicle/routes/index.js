@@ -3,9 +3,11 @@ const cubesController = require('../controllers/cubesController');
 const qs = require('querystring');
 const url = require('url');
 
+const Cube = require('../models/cube');
+
 const router = express.Router();
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
     const {
         search,
         from,
@@ -15,17 +17,21 @@ router.get('/', (req, res) => {
     if (search === undefined &&
         from === undefined &&
         to === undefined) {
+        const cubes = await cubesController.getAllCubes();
+        
         res.render('index', {
             title: 'Home Page',
-            cubes: cubesController.getCubes()
+            cubes: cubes
         });
     } else {
         const newFrom = from === undefined || from === '' ? 1 : from;
         const newTo = to === undefined || to === '' ? 6 : to;
+
+        const cubes = await cubesController.getFilteredCubes(search, newFrom, newTo);
         
         res.render('index', {
             title: 'Home Page',
-            cubes: cubesController.getFilteredCubes(search, newFrom, newTo)
+            cubes: cubes
         })
     }
 });
@@ -42,7 +48,7 @@ router.get('/create', (req, res) => {
     });
 });
 
-router.post('/create', (req, res) => {
+router.post('/create', async (req, res) => {
     const {
         name,
         description,
@@ -50,15 +56,16 @@ router.post('/create', (req, res) => {
         difficultyLevel
     } = req.body;
 
-    cubesController.createCube(name, description, imageUrl, difficultyLevel);
+    const err = await cubesController.createCube(name, description, imageUrl, difficultyLevel);
 
-    res.redirect(302, '/');
+    if (err) console.log(err);
+    else res.redirect(302, '/');
 });
 
-router.get('/details/:id', (req, res) => {
+router.get('/details/:id', async (req, res) => {
     const id = req.params.id;
 
-    const cube = cubesController.getCube(id);
+    const cube = await cubesController.getCube(id);
 
     res.render('details', {
         title: 'Details Page',
