@@ -30,4 +30,8 @@ const CubeSchema = new mongoose.Schema({
     }]
 });
 
+CubeSchema.path('imageUrl').validate(function(url) {
+    return url.includes('http') || url.includes('https');
+}, 'Image url is not valid');
+
 module.exports = mongoose.model('Cube', CubeSchema);
