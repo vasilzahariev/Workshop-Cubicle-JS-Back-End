@@ -1,5 +1,6 @@
 const express = require('express');
 const cubesController = require('../controllers/cubesController');
+const accessoryController = require('../controllers/accessoryController');
 const qs = require('querystring');
 const url = require('url');
 
@@ -62,6 +63,25 @@ router.post('/create', async (req, res) => {
     else res.redirect(302, '/');
 });
 
+router.get('/create/accessory', (req, res) => {
+    res.render('createAccessory', {
+        title: 'Create An Accessory'
+    });
+});
+
+router.post('/create/accessory', async (req, res) => {
+    const {
+        name,
+        description,
+        imageUrl
+    } = req.body;
+
+    const err = await accessoryController.createAccessory(name, description, imageUrl);
+
+    if (err) console.log(err);
+    else res.redirect(302, '/');
+});
+
 router.get('/details/:id', async (req, res) => {
     const id = req.params.id;
 
@@ -72,6 +92,7 @@ router.get('/details/:id', async (req, res) => {
         cube: cube
     })
 });
+
 
 router.get('*', (req, res) => {
     res.render('404');
