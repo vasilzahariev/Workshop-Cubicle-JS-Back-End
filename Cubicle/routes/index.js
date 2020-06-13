@@ -31,7 +31,7 @@ router.get('/', async (req, res) => {
         const cubes = await cubesController.getFilteredCubes(search, newFrom, newTo);
         
         res.render('index', {
-            title: 'Home Page',
+            title: 'Browser',
             cubes: cubes
         })
     }
