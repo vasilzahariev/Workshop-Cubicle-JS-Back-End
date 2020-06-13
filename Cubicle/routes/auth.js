@@ -1,4 +1,5 @@
 const express = require('express');
+const usersController = require('../controllers/usersController');
 
 const router = express.Router();
 
@@ -24,8 +25,11 @@ router.get('/register', (req, res) => {
     })
 });
 
-router.post('register', (req, res) => {
-    //
+router.post('/register', async (req, res) => {
+    const status = await usersController.register(req, res);
+
+    if (status) res.redirect(302, '/');
+    else res.redirect(302, '/register');
 });
 
 //#endregion
