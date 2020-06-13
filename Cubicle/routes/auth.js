@@ -11,8 +11,11 @@ router.get('/login', (req, res) => {
     })
 });
 
-router.post('login', (req, res) => {
-    res.redirect(302, '/');
+router.post('/login', async (req, res) => {
+    const status = await usersController.login(req, res);
+
+    if (status) res.redirect(302, '/');
+    else res.redirect(302, '/login');
 })
 
 //#endregion
