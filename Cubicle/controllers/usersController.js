@@ -23,16 +23,51 @@ const register = async (req, res) => {
 
     const userObj = await user.save();
 
-    const token = jwt.sign({
-        userId: userObj._id,
-        username: userObj.username
-    }, privateKey);
+    const token = createUserToken(userObj);
 
     res.cookie('aid', token);
 
     return true;
 }
 
+const login = async (req, res) => {
+    const {
+        username,
+        password
+    } = req.body;
+
+    const user = await getUserByUsername(username);
+
+    if (!user) {
+        return false;
+    } else {
+        const hashedPassword = user.password;
+
+        const status = await bcrypt.compare(password, hashedPassword);
+
+        if (status) {
+            const token = createUserToken(user);
+
+            res.cookie('aid', token);
+        }
+
+        return status;
+    }
+
+}
+
+const getUserByUsername = async (username) => {
+    return await User.findOne({ username });
+}
+
+const createUserToken = user => {
+    return jwt.sign({
+        userId: user._id,
+        username: user.username
+    }, privateKey);
+}
+
 module.exports = {
-    register
+    register,
+    login
 }
