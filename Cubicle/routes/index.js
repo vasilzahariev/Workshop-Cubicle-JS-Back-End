@@ -1,5 +1,6 @@
 const express = require('express');
 const cubesController = require('../controllers/cubesController');
+const { isAuth } = require('../controllers/usersController');
 const qs = require('querystring');
 const url = require('url');
 
@@ -9,7 +10,7 @@ const router = express.Router();
 
 //#region Index
 
-router.get('/', async (req, res) => {
+router.get('/', isAuth, async (req, res) => {
     const {
         search,
         from,
@@ -23,7 +24,8 @@ router.get('/', async (req, res) => {
         
         res.render('index', {
             title: 'Home Page',
-            cubes: cubes
+            cubes: cubes,
+            isAuth: req.isAuth
         });
     } else {
         const newFrom = from === undefined || from === '' ? 1 : from;
@@ -33,7 +35,8 @@ router.get('/', async (req, res) => {
         
         res.render('index', {
             title: 'Browser',
-            cubes: cubes
+            cubes: cubes,
+            isAuth: req.isAuth
         })
     }
 });
@@ -42,9 +45,10 @@ router.get('/', async (req, res) => {
 
 //#region About
 
-router.get('/about', (req, res) => {
+router.get('/about', isAuth, (req, res) => {
     res.render('about', {
-        title: 'About Page'
+        title: 'About Page',
+        isAuth: req.isAuth
     });
 });
 

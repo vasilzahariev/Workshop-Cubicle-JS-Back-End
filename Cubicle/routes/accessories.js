@@ -1,18 +1,22 @@
 const express = require('express');
 const cubesController = require('../controllers/cubesController');
 const accessoryController = require('../controllers/accessoryController');
+const { checkForAuthentication,
+        isAuth,
+        checkForAuthenticationPOST } = require('../controllers/usersController');
 
 const router = express.Router();
 
 //#region Create
 
-router.get('/create/accessory', (req, res) => {
+router.get('/create/accessory', checkForAuthentication, isAuth, (req, res) => {
     res.render('createAccessory', {
-        title: 'Create An Accessory'
+        title: 'Create An Accessory',
+        isAuth: req.isAuth
     });
 });
 
-router.post('/create/accessory', async (req, res) => {
+router.post('/create/accessory', checkForAuthenticationPOST, async (req, res) => {
     const {
         name,
         description,
@@ -29,19 +33,20 @@ router.post('/create/accessory', async (req, res) => {
 
 //#region Attach Accessory
 
-router.get('/attach/accessory/:id', async (req, res) => {
+router.get('/attach/accessory/:id', checkForAuthentication, isAuth, async (req, res) => {
     const id = req.params.id;
     const cube = await cubesController.getCube(id);
     const accessories = await accessoryController.getUnatachedAccessories(id);
 
     res.render('attachAccessory', {
         title: 'Attach Accessory',
+        isAuth: req.isAuth,
         cube: cube,
         accessories: accessories
     })
 });
 
-router.post('/attach/accessory/:id', async (req, res) => {
+router.post('/attach/accessory/:id', checkForAuthenticationPOST, async (req, res) => {
     const cubeId = req.params.id;
     const accessoryId = req.body.accessory;
 
