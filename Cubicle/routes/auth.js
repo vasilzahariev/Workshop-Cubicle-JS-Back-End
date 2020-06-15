@@ -16,7 +16,7 @@ router.get('/login', usersController.checkForNoAuthentication, isAuth, (req, res
     })
 });
 
-router.post('/login', checkForAuthenticationPOST, async (req, res) => {
+router.post('/login', async (req, res) => {
     const status = await usersController.login(req, res);
 
     if (status) res.redirect(302, '/');
@@ -34,7 +34,7 @@ router.get('/register', usersController.checkForNoAuthentication, isAuth, (req, 
     })
 });
 
-router.post('/register', checkForAuthenticationPOST, async (req, res) => {
+router.post('/register', async (req, res) => {
     const status = await usersController.register(req, res);
 
     if (status) res.redirect(302, '/');

@@ -1,7 +1,12 @@
+const env = process.env.NODE_ENV || "development"
+
 const express = require('express');
+const jwt = require('jsonwebtoken');
+const config = require('../config/config')[env];
 const { checkForAuthentication,
         isAuth,
-        checkForAuthenticationPOST } = require('../controllers/usersController');
+        checkForAuthenticationPOST,
+        checkIfUserIsCreator } = require('../controllers/usersController');
 const cubesController = require('../controllers/cubesController');
 const accessoryController = require('../controllers/accessoryController');
 
@@ -18,6 +23,10 @@ router.get('/create', checkForAuthentication, isAuth, (req, res) => {
 
 // TODO: When there's an invalid image url make it so it shows an error message
 router.post('/create', checkForAuthenticationPOST, async (req, res) => {
+    const token = req.cookies['aid'];
+    const decodedObj = jwt.verify(token, config.privateKey);
+    const userId = decodedObj.userId;
+
     const {
         name,
         description,
@@ -25,7 +34,7 @@ router.post('/create', checkForAuthenticationPOST, async (req, res) => {
         difficultyLevel
     } = req.body;
 
-    const err = await cubesController.createCube(name, description, imageUrl, difficultyLevel);
+    const err = await cubesController.createCube(name, description, imageUrl, difficultyLevel, userId);
 
     if (err) {
         console.log(err);
@@ -73,7 +82,7 @@ router.get('/details/:id', isAuth, async (req, res) => {
 
 //#region Delete
 
-router.get('/delete/:id', isAuth, async (req, res) => {
+router.get('/delete/:id', checkForAuthentication, checkIfUserIsCreator, isAuth, async (req, res) => {
     const id = req.params.id;
     const cube = await cubesController.getCube(id);
     
@@ -82,6 +91,14 @@ router.get('/delete/:id', isAuth, async (req, res) => {
         cube: cube,
         isAuth: req.isAuth
     })
+})
+
+router.post('/delete/:id', checkForAuthentication, checkIfUserIsCreator, async (req, res) => {
+    const cubeId = req.params.id;
+
+    await cubesController.deleteCube(cubeId);
+
+    res.redirect(302, '/')
 })
 
 //#endregion
