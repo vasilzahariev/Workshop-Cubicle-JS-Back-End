@@ -52,11 +52,21 @@ const deleteCube = async cubeId => {
     await Cube.deleteOne({_id: cubeId});
 }
 
+const editCube = async (id, name, description, imageUrl, difficultyLevel) => {
+    await Cube.findOneAndUpdate({ _id: id }, {
+        name: name,
+        description: description,
+        imageUrl: imageUrl,
+        difficulty: difficultyLevel
+    }, { new: true });
+}
+
 module.exports = {
     getAllCubes,
     getCube,
     createCube,
     getFilteredCubes,
     addAccessoryToCube,
-    deleteCube
+    deleteCube,
+    editCube
 }

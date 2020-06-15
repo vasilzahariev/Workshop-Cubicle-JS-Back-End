@@ -141,6 +141,19 @@ const isAuth = (req, res, next) => {
     next();
 }
 
+const isCubeCreator = async (req, res, next) => {
+    const token = req.cookies['aid'];
+    const decodedObj = jwt.verify(token, config.privateKey);
+    const userId = decodedObj.userId;
+    const cubeId = req.params.id;
+    const cube = await cubesController.getCube(cubeId);
+
+    if (userId == cube.creatorId) req.isCubeCreator = true;
+    else req.isCubeCreator = false;
+
+    next();
+}
+
 module.exports = {
     register,
     login,
@@ -149,5 +162,6 @@ module.exports = {
     checkForNoAuthentication,
     checkIfUserIsCreator,
     logout,
-    isAuth
+    isAuth,
+    isCubeCreator
 }
