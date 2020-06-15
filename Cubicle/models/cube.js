@@ -24,6 +24,10 @@ const CubeSchema = new mongoose.Schema({
         min: 1,
         max: 10
     },
+    creatorId: {
+        type: 'ObjectID',
+        ref: 'User'
+    },
     accessories: [{
         type: 'ObjectID',
         ref: 'Accessory'

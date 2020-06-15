@@ -6,6 +6,8 @@ const jwt = require('jsonwebtoken');
 const config = require('../config/config')[env];
 const User = require('../models/user');
 
+const cubesController = require('./cubesController');
+
 const register = async (req, res) => {
     const {
         username,
@@ -110,6 +112,17 @@ const checkForNoAuthentication = (req, res, next) => {
     next();    
 }
 
+const checkIfUserIsCreator = async (req, res, next) => {
+    const token = req.cookies['aid'];
+    const decodedObj = jwt.verify(token, config.privateKey);
+    const userId = decodedObj.userId;
+    const cubeId = req.params.id;
+    const cube = await cubesController.getCube(cubeId);
+
+    if (userId == cube.creatorId) next();
+    else res.redirect('/');
+}
+
 const isAuth = (req, res, next) => {
     const token = req.cookies['aid'];
 
@@ -130,5 +143,6 @@ module.exports = {
     checkForAuthentication,
     checkForAuthenticationPOST,
     checkForNoAuthentication,
+    checkIfUserIsCreator,
     isAuth
 }

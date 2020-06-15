@@ -17,12 +17,13 @@ const getCube = async (id) => {
     return cube
 }
 
-const createCube = async (name, description, imageUrl, difficultyLevel) => {
+const createCube = async (name, description, imageUrl, difficultyLevel, creatorId) => {
     const cube = new Cube({
         name,
         description,
         imageUrl,
-        difficulty: difficultyLevel
+        difficulty: difficultyLevel,
+        creatorId: creatorId
     });
     
     cube.save((err) => {
@@ -47,10 +48,15 @@ const addAccessoryToCube = async (cubeId, accessory) => {
     });
 }
 
+const deleteCube = async cubeId => {
+    await Cube.deleteOne({_id: cubeId});
+}
+
 module.exports = {
     getAllCubes,
     getCube,
     createCube,
     getFilteredCubes,
-    addAccessoryToCube
+    addAccessoryToCube,
+    deleteCube
 }
