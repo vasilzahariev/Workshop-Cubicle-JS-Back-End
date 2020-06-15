@@ -46,7 +46,9 @@ router.post('/register', async (req, res) => {
 //#region Logout
 
 router.get('/logout', usersController.checkForAuthentication, isAuth, (req, res) => {
-    res.redirect('/');
+    usersController.logout(req, res);
+
+    res.redirect(302, '/');
 })
 
 //#endregion
