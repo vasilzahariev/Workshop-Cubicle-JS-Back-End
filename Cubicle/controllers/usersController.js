@@ -1,10 +1,10 @@
+const env = process.env.NODE_ENV || "development"
+
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-
+const config = require('../config/config')[env];
 const User = require('../models/user');
-
-const privateKey = "CUBE-WORKSHOP-SOFTUNI";
 
 const register = async (req, res) => {
     const {
@@ -64,7 +64,7 @@ const createUserToken = user => {
     return jwt.sign({
         userId: user._id,
         username: user.username
-    }, privateKey);
+    }, config.privateKey);
 }
 
 module.exports = {
