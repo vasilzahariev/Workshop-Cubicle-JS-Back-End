@@ -58,6 +58,10 @@ const login = async (req, res) => {
 
 }
 
+const logout = (req, res) => {
+    res.clearCookie('aid');
+}
+
 const getUserByUsername = async (username) => {
     return await User.findOne({ username });
 }
@@ -144,5 +148,6 @@ module.exports = {
     checkForAuthenticationPOST,
     checkForNoAuthentication,
     checkIfUserIsCreator,
+    logout,
     isAuth
 }
