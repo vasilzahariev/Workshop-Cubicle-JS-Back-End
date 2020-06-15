@@ -67,7 +67,68 @@ const createUserToken = user => {
     }, config.privateKey);
 }
 
+const checkForAuthentication = (req, res, next) => {
+    const token = req.cookies['aid'];
+
+    if (!token) return res.redirect('/');
+
+    try {
+        const decodedObj = jwt.verify(token, config.privateKey);
+
+        if (decodedObj) next();
+        else res.redirect('/');
+    } catch (err) {
+        console.log(err)
+        
+        return res.redirect('/');
+    }
+}
+
+const checkForAuthenticationPOST = (req, res, next) => {
+    const token = req.cookies['aid'];
+
+    if (!token) return res.json({
+        error: "Not authenticated"
+    });
+
+    try {
+        const decodedObj = jwt.verify(token, config.privateKey);
+
+        next();
+    } catch (err) {
+        return res.json({
+            error: "Not authenticated"
+        });
+    }
+}
+
+const checkForNoAuthentication = (req, res, next) => {
+    const token = req.cookies['aid'];
+
+    if (token) return res.redirect('/');
+    
+    next();    
+}
+
+const isAuth = (req, res, next) => {
+    const token = req.cookies['aid'];
+
+    try {
+        const decodedObj = jwt.verify(token, config.privateKey);
+
+        req.isAuth = true;
+    } catch (error) {
+        req.isAuth = false;
+    }
+
+    next();
+}
+
 module.exports = {
     register,
-    login
+    login,
+    checkForAuthentication,
+    checkForAuthenticationPOST,
+    checkForNoAuthentication,
+    isAuth
 }

@@ -1,4 +1,7 @@
 const express = require('express');
+const { checkForAuthentication,
+        isAuth,
+        checkForAuthenticationPOST } = require('../controllers/usersController');
 const cubesController = require('../controllers/cubesController');
 const accessoryController = require('../controllers/accessoryController');
 
@@ -6,14 +9,15 @@ const router = express.Router();
 
 //#region Create
 
-router.get('/create', (req, res) => {
+router.get('/create', checkForAuthentication, isAuth, (req, res) => {
     res.render('create', {
-        title: 'Create A Cube'
+        title: 'Create A Cube',
+        isAuth: req.isAuth
     });
 });
 
 // TODO: When there's an invalid image url make it so it shows an error message
-router.post('/create', async (req, res) => {
+router.post('/create', checkForAuthenticationPOST, async (req, res) => {
     const {
         name,
         description,
@@ -36,13 +40,14 @@ router.post('/create', async (req, res) => {
 
 //#region Edit
 
-router.get('/edit/:id', async (req, res) => {
+router.get('/edit/:id', checkForAuthentication, isAuth, async (req, res) => {
     const id = req.params.id;
     const cube = await cubesController.getCube(id);
 
     res.render('EditCubePage', {
         title: "Edit Cube",
-        cube: cube
+        cube: cube,
+        isAuth: req.isAuth
     });
 })
 
@@ -50,7 +55,7 @@ router.get('/edit/:id', async (req, res) => {
 
 //#region Details
 
-router.get('/details/:id', async (req, res) => {
+router.get('/details/:id', isAuth, async (req, res) => {
     const id = req.params.id;
 
     const cube = await cubesController.getCube(id);
@@ -59,7 +64,8 @@ router.get('/details/:id', async (req, res) => {
     res.render('details', {
         title: 'Details Page',
         cube: cube,
-        accessories: accessories
+        accessories: accessories,
+        isAuth: req.isAuth
     });
 });
 
@@ -67,13 +73,14 @@ router.get('/details/:id', async (req, res) => {
 
 //#region Delete
 
-router.get('/delete/:id', async (req, res) => {
+router.get('/delete/:id', isAuth, async (req, res) => {
     const id = req.params.id;
     const cube = await cubesController.getCube(id);
     
     res.render('deleteCubePage', {
         title: "Delete Cube",
-        cube: cube
+        cube: cube,
+        isAuth: req.isAuth
     })
 })
 
