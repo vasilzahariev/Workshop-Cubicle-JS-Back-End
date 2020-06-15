@@ -6,7 +6,8 @@ const config = require('../config/config')[env];
 const { checkForAuthentication,
         isAuth,
         checkForAuthenticationPOST,
-        checkIfUserIsCreator } = require('../controllers/usersController');
+        checkIfUserIsCreator,
+        isCubeCreator } = require('../controllers/usersController');
 const cubesController = require('../controllers/cubesController');
 const accessoryController = require('../controllers/accessoryController');
 
@@ -49,7 +50,7 @@ router.post('/create', checkForAuthenticationPOST, async (req, res) => {
 
 //#region Edit
 
-router.get('/edit/:id', checkForAuthentication, isAuth, async (req, res) => {
+router.get('/edit/:id', checkForAuthentication, checkIfUserIsCreator, isAuth, async (req, res) => {
     const id = req.params.id;
     const cube = await cubesController.getCube(id);
 
@@ -60,11 +61,25 @@ router.get('/edit/:id', checkForAuthentication, isAuth, async (req, res) => {
     });
 })
 
+router.post('/edit/:id', checkForAuthenticationPOST, checkIfUserIsCreator, async (req, res) => {
+    const cubeId = req.params.id;
+    const {
+        name,
+        description,
+        imageUrl,
+        difficultyLevel
+    } = req.body;
+
+    await cubesController.editCube(cubeId, name, description, imageUrl, difficultyLevel);
+    
+    res.redirect(302, '/details/' + cubeId);
+});
+
 //#endregion
 
 //#region Details
 
-router.get('/details/:id', isAuth, async (req, res) => {
+router.get('/details/:id', isAuth, isCubeCreator, async (req, res) => {
     const id = req.params.id;
 
     const cube = await cubesController.getCube(id);
@@ -74,7 +89,8 @@ router.get('/details/:id', isAuth, async (req, res) => {
         title: 'Details Page',
         cube: cube,
         accessories: accessories,
-        isAuth: req.isAuth
+        isAuth: req.isAuth,
+        isCubeCreator: req.isCubeCreator
     });
 });
 
