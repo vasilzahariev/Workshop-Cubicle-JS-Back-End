@@ -85,7 +85,7 @@ const checkForAuthentication = (req, res, next) => {
         else res.redirect('/');
     } catch (err) {
         console.log(err)
-        
+
         return res.redirect('/');
     }
 }
@@ -112,8 +112,8 @@ const checkForNoAuthentication = (req, res, next) => {
     const token = req.cookies['aid'];
 
     if (token) return res.redirect('/');
-    
-    next();    
+
+    next();
 }
 
 const checkIfUserIsCreator = async (req, res, next) => {
@@ -142,14 +142,18 @@ const isAuth = (req, res, next) => {
 }
 
 const isCubeCreator = async (req, res, next) => {
-    const token = req.cookies['aid'];
-    const decodedObj = jwt.verify(token, config.privateKey);
-    const userId = decodedObj.userId;
-    const cubeId = req.params.id;
-    const cube = await cubesController.getCube(cubeId);
+    try {
+        const token = req.cookies['aid'];
+        const decodedObj = jwt.verify(token, config.privateKey);
+        const userId = decodedObj.userId;
+        const cubeId = req.params.id;
+        const cube = await cubesController.getCube(cubeId);
 
-    if (userId == cube.creatorId) req.isCubeCreator = true;
-    else req.isCubeCreator = false;
+        if (userId == cube.creatorId) req.isCubeCreator = true;
+        else req.isCubeCreator = false;
+    } catch (error) {
+        req.isCubeCreator = false;
+    }
 
     next();
 }
